@@ -24,7 +24,7 @@ public class CoordinateDbContext : DbContext
         // Men vi bruker 4258
     }
     
-    public Coordinate AddCoordinate(int epsg, double latitude, double longitude)
+    public async Task<Coordinate> AddCoordinate(int epsg, double latitude, double longitude)
     {
         //Kommentar nedenfor er muligens ikke relevant.
         /* Legg også merke til at _nextId er vekke, samt id constructoren i UserTask. Id håndteringen er nå flyttet til databasen i steden for.  */
@@ -34,16 +34,16 @@ public class CoordinateDbContext : DbContext
             Latitude = latitude,
             Longitude = longitude
         };
-        Coordinates.Add(newCoordinate);
-        SaveChanges();
+        await Coordinates.AddAsync(newCoordinate);
+        await SaveChangesAsync();
         return newCoordinate;
     }
     
     //Kommentar nedenfor er muligens ikke relevant.
     /* I de etterfølgende metodene skal vi jo bare "lese" tasks, vi skal ikke endre de på noen måte. Da kan vi hente ut Tasks.AsNoTracking(), det betyr at vi sier til EF core
     at denne hentingen av data, trenger ingen tracker overhead.  */
-    public List<Coordinate> GetAllCoordinates()
+    public async Task<List<Coordinate>> GetAllCoordinates()
     {
-        return Coordinates.AsNoTracking().ToList();
+        return await Coordinates.AsNoTracking().ToListAsync();
     }
 }

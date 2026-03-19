@@ -4,7 +4,7 @@ namespace ms_efcore_sample.runs;
 
 public class CoordinateContextPractice
 {
-    public static void runThis()
+    public static async Task RunThis()
     {
         using var coordinateCtx = new CoordinateDbContext();
 
@@ -12,10 +12,10 @@ public class CoordinateContextPractice
 
 //Vil gi feilmelding om koordinat-id parameteret allerede er på en rad i databasen.
 //coordinateCtx.AddCoordinate(1,4258,50.000000,10.000000);
-        coordinateCtx.AddCoordinate(4258,50.000000,10.000000);
+        await coordinateCtx.AddCoordinate(4258,50.000000,10.000000);
 
         List<Coordinate> getList = new();
-        getList = coordinateCtx.GetAllCoordinates();
+        getList = await coordinateCtx.GetAllCoordinates();
 
         void WriteEmAll()
         {

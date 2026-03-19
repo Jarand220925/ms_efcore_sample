@@ -7,8 +7,8 @@ using ms_efcore_sample.models;
 using ms_efcore_sample.runs;
 
 //-------------------------------------------
-//var msSample = Ms_Sample.runThis();
+//var msSample = Ms_Sample.RunThis();
 
 //-------------------------------------------
 
-CoordinateContextPractice.runThis();
+await CoordinateContextPractice.RunThis();
