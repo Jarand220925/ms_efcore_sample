@@ -5,6 +5,7 @@ namespace ms_efcore_sample.models;
 public class CoordinateDbContext : DbContext
 {
     public DbSet<Coordinate> Coordinates { get; set; }
+    public DbSet<CoordinateNoPoint> CoordinateNoPoints { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -42,8 +43,44 @@ public class CoordinateDbContext : DbContext
     //Kommentar nedenfor er muligens ikke relevant.
     /* I de etterfølgende metodene skal vi jo bare "lese" tasks, vi skal ikke endre de på noen måte. Da kan vi hente ut Tasks.AsNoTracking(), det betyr at vi sier til EF core
     at denne hentingen av data, trenger ingen tracker overhead.  */
-    public async Task<List<Coordinate>> GetAllCoordinates()
+    public async Task<List<CoordinateDto>> GetAllCoordinates()
     {
-        return await Coordinates.AsNoTracking().ToListAsync();
+        var dbSetList = await Coordinates.Select(sourceItem => new CoordinateDto()
+        {
+            CoordinateId = sourceItem.CoordinateId,
+            Epsg = sourceItem.EPSG,
+            Latitude = sourceItem.GeographyPoint.X,
+            Longitude = sourceItem.GeographyPoint.Y
+        }).ToListAsync();
+        Console.WriteLine($"All coordinates:");
+        foreach (var item in dbSetList)
+        {
+            //Krever litt mer for å vise punktdata.
+            Console.WriteLine(
+                $"CoordId: {item.CoordinateId},EPSG: {item.Epsg},Latitude: {item.Latitude}, Longitude: {item.Longitude}");
+        }
+        return dbSetList;
     }
+    
+    public async Task<CoordinateNoPoint> AddCoordinateNoPoint(int epsg, double latitude, double longitude)
+    {
+        //Kommentar nedenfor er muligens ikke relevant.
+        /* Legg også merke til at _nextId er vekke, samt id constructoren i UserTask. Id håndteringen er nå flyttet til databasen i steden for.  */
+        var newCoordinate = new CoordinateNoPoint()
+        {
+            EPSG =  epsg,
+            Latitude = latitude,
+            Longitude = longitude
+        };
+        await CoordinateNoPoints.AddAsync(newCoordinate);
+        await SaveChangesAsync();
+        return newCoordinate;
+    }
+    
+    public async Task<List<CoordinateNoPoint>> GetAllCoordinateNoPoints()
+    {
+        return await CoordinateNoPoints.AsNoTracking().ToListAsync();
+    }
+    
+    
 }

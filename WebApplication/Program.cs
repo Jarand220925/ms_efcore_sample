@@ -25,5 +25,6 @@ app.UseAuthorization();
 
 
 app.MapControllers();
+//app.MapGet("/", (CoordinateDbContext dbContext) => dbContext.Coordinates.Take(100).ToList());
 
 app.Run();

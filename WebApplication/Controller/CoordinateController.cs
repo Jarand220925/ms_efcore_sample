@@ -35,5 +35,18 @@ public class CoordinateController(CoordinateDbContext context, ILogger<Coordinat
             return StatusCode(500, ex.Message);
         }
     }
+    
+    [HttpGet("/allnopoints")]
+    public async Task<IActionResult> GetAllNoPoints(){
+        try
+        {
+            return Ok(await context.GetAllCoordinateNoPoints());
+        }
+        catch(Exception ex)
+        {
+            logger.LogError(ex.Message);
+            return StatusCode(500, ex.Message);
+        }
+    }
 
 }
