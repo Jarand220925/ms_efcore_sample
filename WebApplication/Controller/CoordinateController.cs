@@ -36,6 +36,20 @@ public class CoordinateController(CoordinateDbContext context, ILogger<Coordinat
         }
     }
     
+    [HttpGet("/alljson")]
+    /* Se navngivningen på denne metoden. */
+    public async Task<IActionResult> GetAllJson(){
+        try
+        {
+            return Ok(await context.GetAllCoordinateGeojson());
+        }
+        catch(Exception ex)
+        {
+            logger.LogError(ex.Message);
+            return StatusCode(500, ex.Message);
+        }
+    }
+    
     [HttpGet("/allnopoints")]
     public async Task<IActionResult> GetAllNoPoints(){
         try
