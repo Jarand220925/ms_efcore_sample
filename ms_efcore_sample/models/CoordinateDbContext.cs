@@ -71,12 +71,13 @@ public class CoordinateDbContext : DbContext
         return list;
     }
 
-    public async Task<List<CoordinateGeojsonDto>> GetAllCoordinateGeojson()
+    public async Task<List<string>> GetAllCoordinateGeojson()
     {
         var dbSetList = await Coordinates.ToListAsync();
         string description = "From running 'name'";
         List<CoordinateGeojsonDto> list = dbSetList.Select(item=>new CoordinateGeojsonDto("GetAllCoordinateGeojson",description,item)).ToList();
-        return list;
+        List<string> jsonList = list.Select(item => item.JsonWithSystemTextJson).ToList(); 
+        return jsonList;
     }
     
     public async Task<CoordinateNoPoint> AddCoordinateNoPoint(int epsg, double latitude, double longitude)
