@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using ms_efcore_sample.models;
+using NetTopologySuite.Features;
+using NetTopologySuite.IO.Converters;
 
 namespace WebApplication.Controller;
 
@@ -41,7 +44,16 @@ public class CoordinateController(CoordinateDbContext context, ILogger<Coordinat
     public async Task<IActionResult> GetAllJson(){
         try
         {
-            return Ok(await context.GetAllCoordinateGeojson());
+            var options = new JsonSerializerOptions
+            {
+                Converters = { new GeoJsonConverterFactory() },
+                // Optional: for pretty formatting
+                WriteIndented = true 
+            };
+            List<FeatureCollection> list = await context.GetAllCoordinateGeojson();
+            var json = JsonSerializer.Serialize(list, options);
+            return Ok(json);
+            
         }
         catch(Exception ex)
         {

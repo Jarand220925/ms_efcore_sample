@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Features;
 using Npgsql;
 
 namespace ms_efcore_sample.models;
@@ -71,13 +72,12 @@ public class CoordinateDbContext : DbContext
         return list;
     }
 
-    public async Task<List<string>> GetAllCoordinateGeojson()
+    public async Task<List<FeatureCollection>> GetAllCoordinateGeojson()
     {
         var dbSetList = await Coordinates.ToListAsync();
         string description = "From running 'name'";
         List<CoordinateGeojsonDto> list = dbSetList.Select(item=>new CoordinateGeojsonDto("GetAllCoordinateGeojson",description,item)).ToList();
-        List<string> jsonList = list.Select(item => item.JsonWithSystemTextJson).ToList(); 
-        return jsonList;
+        return list.Select(item => item.FeatureCollection).ToList();
     }
     
     public async Task<CoordinateNoPoint> AddCoordinateNoPoint(int epsg, double latitude, double longitude)
