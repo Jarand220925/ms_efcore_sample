@@ -12,7 +12,7 @@ public class CoordinateContextPractice
 
 //Vil gi feilmelding om koordinat-id parameteret allerede er på en rad i databasen.
 //coordinateCtx.AddCoordinate(1,4258,50.000000,10.000000);
-        await coordinateCtx.AddCoordinate(4258,55.000001,14.000001);
+        await coordinateCtx.AddCoordinate(4258,65.000001,14.000001);
         CoordinateDto coordNp = new();
 
         List<CoordinateDto> getList = new();
@@ -51,5 +51,18 @@ public class CoordinateContextPractice
         };
         Console.WriteLine($"CoordinateId: {coord.CoordinateId}, X: {coord.GeographyPoint.X}, Y: {coord.GeographyPoint.Y} \n" +
                           $"Point: {coord.GeographyPoint.Coordinate}");
+    }
+
+    public static async Task CreateAndLookGeojson()
+    {
+        var coord = new Coordinate(70,13)
+        {
+            CoordinateId = 1,
+            EPSG = 3857,
+            Latitude = 10.111100,
+            Longitude = 50.000000
+        };
+
+        var coordGeoJson = new CoordinateGeojsonDto("noe sted","ingen snøring",coord);
     }
 }
