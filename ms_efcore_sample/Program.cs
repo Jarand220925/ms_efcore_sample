@@ -13,4 +13,5 @@ using ms_efcore_sample.runs;
 
 await CoordinateContextPractice.RunThis();
 
-await CoordinateContextPractice.AddNoPoint();
+//await CoordinateContextPractice.AddNoPoint();
+await CoordinateContextPractice.CreateAndLook();

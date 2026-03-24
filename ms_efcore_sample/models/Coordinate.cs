@@ -1,4 +1,5 @@
-﻿using NetTopologySuite.Geometries;
+﻿using NetTopologySuite;
+using NetTopologySuite.Geometries;
 
 namespace ms_efcore_sample.models;
 
@@ -12,7 +13,20 @@ public class Coordinate
 
     public Coordinate()
     {
-        GeographyPoint = new Point(Latitude, Longitude);
-        GeographyPoint.SRID = 4258;
+        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4258);
+        GeographyPoint = geometryFactory.CreatePoint(new NetTopologySuite.Geometries.Coordinate(Latitude,Longitude));
+    }
+    
+    public Coordinate(double latitude, double longitude)
+    {
+        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4258);
+        GeographyPoint = geometryFactory.CreatePoint(new NetTopologySuite.Geometries.Coordinate(latitude,longitude));
+    }
+
+    public Coordinate BuildGeographyPoint()
+    {
+        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4258);
+        GeographyPoint = geometryFactory.CreatePoint(new NetTopologySuite.Geometries.Coordinate(Latitude,Longitude));
+        return this;
     }
 }

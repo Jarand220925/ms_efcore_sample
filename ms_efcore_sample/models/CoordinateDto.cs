@@ -2,11 +2,11 @@
 
 public class CoordinateDto
 {
-    public int CoordinateId;
+    public int CoordinateId { get; set; }
     //SRID
-    public int Epsg;
-    public double Latitude;
-    public double Longitude;
+    public int Epsg { get; set; }
+    public double Latitude  { get; set; }
+    public double Longitude  { get; set; }
     
     public CoordinateDto()
     {

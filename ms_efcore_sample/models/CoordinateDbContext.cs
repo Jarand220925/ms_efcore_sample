@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace ms_efcore_sample.models;
 
@@ -6,11 +7,16 @@ public class CoordinateDbContext : DbContext
 {
     public DbSet<Coordinate> Coordinates { get; set; }
     public DbSet<CoordinateNoPoint> CoordinateNoPoints { get; set; }
+    
+    
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Username=Kodehode;Password=12345;database=Energimerking;");
+        dataSourceBuilder.UseNetTopologySuite(); // Configure NTS at the ADO.NET level
+        var dataSource = dataSourceBuilder.Build();
         optionsBuilder.UseNpgsql(
-            "Host=localhost;Username=Kodehode;Password=12345;database=Energimerking;", 
+            dataSource,
             o => o.UseNetTopologySuite() // Enable NetTopologySuite support
         );
     }
@@ -29,12 +35,13 @@ public class CoordinateDbContext : DbContext
     {
         //Kommentar nedenfor er muligens ikke relevant.
         /* Legg også merke til at _nextId er vekke, samt id constructoren i UserTask. Id håndteringen er nå flyttet til databasen i steden for.  */
-        var newCoordinate = new Coordinate()
+        var newCoordinate = new Coordinate
         {
             EPSG =  epsg,
             Latitude = latitude,
             Longitude = longitude
         };
+        newCoordinate = newCoordinate.BuildGeographyPoint();
         await Coordinates.AddAsync(newCoordinate);
         await SaveChangesAsync();
         return newCoordinate;
@@ -45,21 +52,23 @@ public class CoordinateDbContext : DbContext
     at denne hentingen av data, trenger ingen tracker overhead.  */
     public async Task<List<CoordinateDto>> GetAllCoordinates()
     {
-        var dbSetList = await Coordinates.Select(sourceItem => new CoordinateDto()
+        var dbSetList = await Coordinates.ToListAsync();
+        List<CoordinateDto> list = dbSetList.Select(item=>new CoordinateDto(item)).ToList();
+        Console.WriteLine($"All coordinateDtos:");
+        foreach (var item in list)
         {
-            CoordinateId = sourceItem.CoordinateId,
-            Epsg = sourceItem.EPSG,
-            Latitude = sourceItem.GeographyPoint.X,
-            Longitude = sourceItem.GeographyPoint.Y
-        }).ToListAsync();
-        Console.WriteLine($"All coordinates:");
-        foreach (var item in dbSetList)
-        {
-            //Krever litt mer for å vise punktdata.
             Console.WriteLine(
                 $"CoordId: {item.CoordinateId},EPSG: {item.Epsg},Latitude: {item.Latitude}, Longitude: {item.Longitude}");
         }
-        return dbSetList;
+        Console.WriteLine($"All coordinates:");
+        foreach (var item in Coordinates)
+        {
+            //Krever litt mer for å vise punktdata.
+            Console.WriteLine(
+                $"CoordId: {item.CoordinateId},EPSG: {item.EPSG},Latitude: {item.Latitude}, Longitude: {item.Longitude} \n" +
+                $"GeographyPoint EPSG: {item.GeographyPoint.SRID}, X: {item.GeographyPoint.CoordinateSequence}, Y: {item.GeographyPoint.GeometryType}");
+        }
+        return list;
     }
     
     public async Task<CoordinateNoPoint> AddCoordinateNoPoint(int epsg, double latitude, double longitude)
