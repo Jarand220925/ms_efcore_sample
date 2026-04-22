@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ms_efcore_sample.classes;
+using ms_efcore_sample.classes.Dtos;
 using NetTopologySuite.Features;
 using Npgsql;
 
@@ -71,14 +73,14 @@ public class CoordinateDbContext : DbContext
         }
         return list;
     }
-
-    public async Task<List<FeatureCollection>> GetAllCoordinateGeojson()
+    //Gammel
+    /*public async Task<List<FeatureCollection>> GetAllCoordinateGeojson()
     {
         var dbSetList = await Coordinates.ToListAsync();
         string description = "From running 'name'";
         List<CoordinateGeojsonDto> list = dbSetList.Select(item=>new CoordinateGeojsonDto("GetAllCoordinateGeojson",description,item)).ToList();
         return list.Select(item => item.FeatureCollection).ToList();
-    }
+    }*/
     
     public async Task<CoordinateNoPoint> AddCoordinateNoPoint(int epsg, double latitude, double longitude)
     {
@@ -98,6 +100,28 @@ public class CoordinateDbContext : DbContext
     public async Task<List<CoordinateNoPoint>> GetAllCoordinateNoPoints()
     {
         return await CoordinateNoPoints.AsNoTracking().ToListAsync();
+    }
+    
+    /// <summary>
+    /// Looks at every coordinate, filtering out any that doesn't have "Kommunenummer" or Geography.
+    /// Is prone to crashing web-browser.
+    /// Result will likely exceed 40mb.
+    /// </summary>
+    /// <returns>Gives a serialized string of all coordinates</returns>
+    public async Task<string> GetAllCoordinateGeojson()
+    {
+        var dbSetList = await Coordinates.ToListAsync();
+        List<CoordinateGeojsonDto> list = dbSetList.Select(item=>new CoordinateGeojsonDto(item)).ToList();
+        var jsonSerializer = new GeojsonSerializer<CoordinateGeojsonDto>(list);
+        return jsonSerializer.Json;
+    }
+    
+    public async Task<string> GetAmountCoordinateGeojson(int amount)
+    {
+        var dbSetList = await Coordinates.Take(amount).ToListAsync();
+        List<CoordinateGeojsonDto> list = dbSetList.Select(item=>new CoordinateGeojsonDto(item)).ToList();
+        var jsonSerializer = new GeojsonSerializer<CoordinateGeojsonDto>(list);
+        return jsonSerializer.Json;
     }
     
     

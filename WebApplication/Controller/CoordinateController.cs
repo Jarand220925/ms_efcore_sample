@@ -1,5 +1,9 @@
-﻿using System.Text.Json;
+﻿using System.Text;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ms_efcore_sample.classes;
+using ms_efcore_sample.classes.Dtos;
 using ms_efcore_sample.models;
 using NetTopologySuite.Features;
 using NetTopologySuite.IO.Converters;
@@ -26,7 +30,6 @@ public class CoordinateController(CoordinateDbContext context, ILogger<Coordinat
     // }
     
     [HttpGet("/emall")]
-    /* Se navngivningen på denne metoden. */
     public async Task<IActionResult> GetEmAll(){
         try
         {
@@ -40,18 +43,14 @@ public class CoordinateController(CoordinateDbContext context, ILogger<Coordinat
     }
     
     [HttpGet("/alljson")]
-    /* Se navngivningen på denne metoden. */
     public async Task<IActionResult> GetAllJson(){
         try
         {
-            var options = new JsonSerializerOptions
-            {
-                Converters = { new GeoJsonConverterFactory() },
-                // Optional: for pretty formatting
-                WriteIndented = true 
-            };
-            List<FeatureCollection> list = await context.GetAllCoordinateGeojson();
-            var json = JsonSerializer.Serialize(list, options);
+                
+            /*List<FeatureCollection> list = await context.GetAllCoordinateGeojson();
+            var json = JsonSerializer.Serialize(list, options);*/
+            string json = await context.GetAllCoordinateGeojson();
+            var byteCount = Encoding.UTF8.GetByteCount(json);
             return Ok(json);
             
         }
@@ -73,6 +72,17 @@ public class CoordinateController(CoordinateDbContext context, ILogger<Coordinat
             logger.LogError(ex.Message);
             return StatusCode(500, ex.Message);
         }
+    }
+    /// <summary>Denne metoden er laget for å se om all logikken kan være i endepunktkallet</summary>
+    /// <param name="amount"></param>
+    /// <returns></returns>
+    [HttpGet("/amount_geojson")]
+    public async Task<IActionResult> GetAmountGeojson(int amount)
+    {
+        var dbSetList = await context.Coordinates.Take(amount).ToListAsync();
+        List<CoordinateGeojsonDto> list = dbSetList.Select(item=>new CoordinateGeojsonDto(item)).ToList();
+        var jsonSerializer = new GeojsonSerializer<CoordinateGeojsonDto>(list);
+        return Ok(jsonSerializer.Json);
     }
 
 }

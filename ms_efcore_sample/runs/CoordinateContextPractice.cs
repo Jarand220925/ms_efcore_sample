@@ -1,4 +1,5 @@
-﻿using ms_efcore_sample.models;
+﻿using ms_efcore_sample.classes.Dtos;
+using ms_efcore_sample.models;
 
 namespace ms_efcore_sample.runs;
 
@@ -62,7 +63,6 @@ public class CoordinateContextPractice
             Latitude = 10.111100,
             Longitude = 50.000000
         };
-
-        var coordGeoJson = new CoordinateGeojsonDto("noe sted","ingen snøring",coord);
+        var coordGeoJson = new CoordinateGeojsonDto(coord);
     }
 }
