@@ -11,7 +11,12 @@ using ms_efcore_sample.runs;
 
 //-------------------------------------------
 
-await CoordinateContextPractice.RunThis();
+//await CoordinateContextPractice.RunThis();
 
+//Lag en ny CoordinateNoPoint og legg til i databasen.
 //await CoordinateContextPractice.AddNoPoint();
+
+//Lag en Coordinate-model og sjekk verdiene på den.
 await CoordinateContextPractice.CreateAndLook();
+
+await CoordinateContextPractice.CreateAndLookGeojson();
