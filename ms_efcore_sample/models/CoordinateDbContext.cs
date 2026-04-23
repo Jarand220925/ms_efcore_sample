@@ -130,10 +130,28 @@ public class CoordinateDbContext : DbContext
     {
         return await CoordinateNoPoints.AsNoTracking().ToListAsync();
     }
-    
+    /// <summary>
+    /// Finner eiendommer som referer til ett koordinat som
+    /// igjen blir referert til av en eller flere andre eiendommer.
+    /// </summary>
+    /// <returns>Filtrert liste med eiendommer</returns>
     public async Task<List<Eiendom>> GetAllEiendommerWithManyGeos()
     {
-        return null;
+        var coordinates = await Coordinates.AsNoTracking().ToListAsync();
+        List<Eiendom> eiendomsListe = new();
+        foreach (var item in coordinates)
+        {
+            var eiendom = await Eiendommer.Where(e => e.CoordinateId == item.CoordinateId).ToListAsync();
+            if (eiendom != null)
+            {
+                eiendomsListe.AddRange(eiendom);
+            }
+        }
+        List<Eiendom> filtrertEiendomsListe = eiendomsListe.GroupBy(e => e.CoordinateId)
+            .Where(group => group.Count() > 1)
+            .SelectMany(group => group)
+            .ToList();
+        return filtrertEiendomsListe;
     }
     /// <summary>
     /// Simpel utspørring etter eiendommer på ett koordinat

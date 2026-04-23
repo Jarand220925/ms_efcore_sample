@@ -86,6 +86,19 @@ public class CoordinateController(CoordinateDbContext context, ILogger<Coordinat
             return StatusCode(500, ex.Message);
         }
     }
+    
+    [HttpGet("/all_eiendommer_share_point")]
+    public async Task<IActionResult> GetAllEiendommerSharePoint(){
+        try
+        {
+            return Ok(await context.GetAllEiendommerWithManyGeos());
+        }
+        catch(Exception ex)
+        {
+            logger.LogError(ex.Message);
+            return StatusCode(500, ex.Message);
+        }
+    }
     /// <summary>Denne metoden er laget for å se om all logikken kan være i endepunktkallet</summary>
     /// <param name="amount"></param>
     /// <returns></returns>
