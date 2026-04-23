@@ -1,10 +1,12 @@
-﻿using NetTopologySuite;
+﻿using System.ComponentModel.DataAnnotations;
+using NetTopologySuite;
 using NetTopologySuite.Geometries;
 
 namespace ms_efcore_sample.models;
 
 public class Coordinate
 {
+    [Key]
     public int CoordinateId { get; set; }
     public int EPSG { get; set; }
     public double Latitude { get; set; }

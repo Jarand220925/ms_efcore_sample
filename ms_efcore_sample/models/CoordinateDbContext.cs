@@ -11,6 +11,10 @@ public class CoordinateDbContext : DbContext
     public DbSet<Coordinate> Coordinates { get; set; }
     public DbSet<CoordinateNoPoint> CoordinateNoPoints { get; set; }
     
+    public DbSet<Kommune> Kommuner { get; set; }
+    
+    public DbSet<Eiendom> Eiendommer {get; set;}
+    
     
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -48,6 +52,31 @@ public class CoordinateDbContext : DbContext
         await Coordinates.AddAsync(newCoordinate);
         await SaveChangesAsync();
         return newCoordinate;
+    }
+    
+    public async Task<Eiendom> AddEiendom(string adresse, int kommuneId, int coordinateId, string byggType)
+    {
+        var newEiendom = new Eiendom
+        {
+            Adresse = adresse,
+            KommuneId = kommuneId,
+            CoordinateId = coordinateId,
+            ByggType = byggType
+        };
+        await Eiendommer.AddAsync(newEiendom);
+        await SaveChangesAsync();
+        return newEiendom;
+    }
+    
+    public async Task<Kommune> AddKommune(string navn)
+    {
+        var newKommune = new Kommune
+        {
+            Navn = navn
+        };
+        await Kommuner.AddAsync(newKommune);
+        await SaveChangesAsync();
+        return newKommune;
     }
     
     //Kommentar nedenfor er muligens ikke relevant.
@@ -100,6 +129,23 @@ public class CoordinateDbContext : DbContext
     public async Task<List<CoordinateNoPoint>> GetAllCoordinateNoPoints()
     {
         return await CoordinateNoPoints.AsNoTracking().ToListAsync();
+    }
+    
+    public async Task<List<Eiendom>> GetAllEiendommerWithManyGeos()
+    {
+        return null;
+    }
+    /// <summary>
+    /// Simpel utspørring etter eiendommer på ett koordinat
+    /// </summary>
+    /// <param name="coordinateId"></param>
+    /// <returns>List of Eiendom</returns>
+    public async Task<Object> GetEiendommerOnPoint(int coordinateId)
+    {
+        var coordinate = Coordinates.FindAsync(coordinateId).Result;
+        var eiendomsListe = await Eiendommer
+            .Where(e => e.CoordinateId == coordinate.CoordinateId).ToListAsync(); 
+        return eiendomsListe;
     }
     
     /// <summary>

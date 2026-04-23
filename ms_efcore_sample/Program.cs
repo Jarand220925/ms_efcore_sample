@@ -17,6 +17,15 @@ using ms_efcore_sample.runs;
 //await CoordinateContextPractice.AddNoPoint();
 
 //Lag en Coordinate-model og sjekk verdiene på den.
-await CoordinateContextPractice.CreateAndLook();
+//await CoordinateContextPractice.CreateAndLook();
 
-await CoordinateContextPractice.CreateAndLookGeojson();
+//await CoordinateContextPractice.CreateAndLookGeojson();
+
+//await CoordinateContextPractice.CreateEiendom("Konglomeratgaten 5",1,13,"blokk");
+//await CoordinateContextPractice.CreateKommune("Oslo");
+//await CoordinateContextPractice.CreateCoordinate(4258,66,66);
+/*for (int i = 0; i < 2; i++)
+{
+    await CoordinateContextPractice.CreateEiendom("Konglomeratgaten 5",1,13,"blokk");
+}*/
+Console.WriteLine("Hello, World!");

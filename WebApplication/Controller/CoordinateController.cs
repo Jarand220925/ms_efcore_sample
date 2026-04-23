@@ -73,10 +73,23 @@ public class CoordinateController(CoordinateDbContext context, ILogger<Coordinat
             return StatusCode(500, ex.Message);
         }
     }
+    
+    [HttpGet("/eiendommer_on_point:{id}")]
+    public async Task<IActionResult> GetEiendommerOnPoint(int id){
+        try
+        {
+            return Ok(await context.GetEiendommerOnPoint(id));
+        }
+        catch(Exception ex)
+        {
+            logger.LogError(ex.Message);
+            return StatusCode(500, ex.Message);
+        }
+    }
     /// <summary>Denne metoden er laget for å se om all logikken kan være i endepunktkallet</summary>
     /// <param name="amount"></param>
     /// <returns></returns>
-    [HttpGet("/amount_geojson")]
+    [HttpGet("/amount_geojson{amount}")]
     public async Task<IActionResult> GetAmountGeojson(int amount)
     {
         var dbSetList = await context.Coordinates.Take(amount).ToListAsync();

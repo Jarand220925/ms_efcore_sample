@@ -65,4 +65,31 @@ public class CoordinateContextPractice
         };
         var coordGeoJson = new CoordinateGeojsonDto(coord);
     }
+
+    public static async Task CreateEiendom(string adresse, int kommuneId, int coordinateId, string byggType)
+    {
+        using var coordinateCtx = new CoordinateDbContext();
+        
+        coordinateCtx.Database.EnsureCreated();
+        
+        await coordinateCtx.AddEiendom(adresse,kommuneId, coordinateId, byggType);
+    }
+    
+    public static async Task CreateKommune(string navn)
+    {
+        using var coordinateCtx = new CoordinateDbContext();
+        
+        coordinateCtx.Database.EnsureCreated();
+        
+        await coordinateCtx.AddKommune(navn);
+    }
+
+    public static async Task CreateCoordinate(int epsg,double lat,double lon)
+    {
+        using var coordinateCtx = new CoordinateDbContext();
+        
+        coordinateCtx.Database.EnsureCreated();
+        
+        await coordinateCtx.AddCoordinate(epsg,lat,lon);
+    }
 }
