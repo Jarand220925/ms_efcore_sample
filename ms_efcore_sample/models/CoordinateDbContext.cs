@@ -13,7 +13,7 @@ public class CoordinateDbContext : DbContext
     
     public DbSet<Kommune> Kommuner { get; set; }
     
-    public DbSet<Eiendom> Eiendommer {get; set;}
+    public DbSet<Eiendom> Eiendommer { get; set; }
     
     
 
@@ -59,7 +59,7 @@ public class CoordinateDbContext : DbContext
         var newEiendom = new Eiendom
         {
             Adresse = adresse,
-            KommuneId = kommuneId,
+            //KommuneId = kommuneId,
             CoordinateId = coordinateId,
             ByggType = byggType
         };
@@ -128,6 +128,17 @@ public class CoordinateDbContext : DbContext
     
     public async Task<List<CoordinateNoPoint>> GetAllCoordinateNoPoints()
     {
+        //Bruker denne funksjonen til å teste datainnsamling.
+        
+        //Henter eiendommer med energimerker og kommuner.
+        var somedata = await Eiendommer.Include(e => e.EnergiMerker)
+            .Include(e => e.Kommune).ToListAsync();
+        //Legger kommunene i egen liste.
+        var kommuner = somedata.Select(s => s.Kommune).ToList();
+        //Legger energimerkene i egen liste.
+        var energiMrk = somedata.Select(e => e.EnergiMerker);
+        //zzz
+        //Denne linjen gjør det endepunktet er ment for.
         return await CoordinateNoPoints.AsNoTracking().ToListAsync();
     }
     /// <summary>

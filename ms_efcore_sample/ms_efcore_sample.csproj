@@ -19,4 +19,8 @@
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="10.0.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="DbContexts\" />
+    </ItemGroup>
+
 </Project>

@@ -7,12 +7,17 @@ public class Eiendom
 {
     [Key]
     public int EiendomId { get; set; }
-    [ForeignKey("Kommune")]
-    public int KommuneId { get; set; }
-    [ForeignKey("Coordinate")]
+    //public int KommuneId { get; set; }
+    //FK blir satt opp automatisk i postgreSQL med navn: "KommuneId"
+    public Kommune Kommune { get; set; }
+    
+    [ForeignKey(nameof(Coordinate))]
     public int? CoordinateId { get; set; }
+    public Coordinate Coordinate { get; set; }
     
     public required string ByggType { get; set; }
     
     public required string Adresse { get; set; }
+    
+    public ICollection<EnergiMerke> EnergiMerker { get; set; }
 }
